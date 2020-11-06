@@ -127,14 +127,16 @@
 
             $console = $this->createPartialMock( Console::class, [ 'stderr' ] );
             $console
-                ->expects( $this->exactly( 1 ) )
+                ->expects( $this->exactly( 2 ) )
                 ->method( 'stderr' )
                 ->withConsecutive(
-                    [ 'test' ],
+                    [ 'exception' ],
+                    [ 'error' ]
                 );
 
             $logger = new LogContainerConsole( $console );
 
-            $logger->logException( new \Exception( 'test' ), 'my.url.com' );
+            $logger->logException( new \Exception( 'exception' ), 'my.url.com' );
+            $logger->logException( new \Error( 'error' ), 'my.url.com' );
         }
     }

@@ -72,7 +72,7 @@
         /**
          * @inheritdoc
          */
-        public function logException( \Exception $exception, ?string $url ) {
+        public function logException( \Throwable $exception, ?string $url ) {
 
             parent::logException( $exception, $url );
 

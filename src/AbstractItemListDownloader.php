@@ -195,6 +195,7 @@
 
                     $event = new ItemEndEvent( $site_entry, $this->item_count, $state );
                     $this->trigger( self::EVENT_ON_ITEM_END, $event );
+                    $state = $event->getState();
                     $this->log_container->logItemEnd( $site_entry, $state );
                 } catch ( \Throwable $exception ) {
 
@@ -203,6 +204,7 @@
                     $state = self::STATE_FAIL;
                     $event = new ItemEndEvent( null, $this->item_count, $state );
                     $this->trigger( self::EVENT_ON_ITEM_END, $event );
+                    $state = $event->getState();
                     $this->log_container->logItemEnd( $site_entry, $state );
                 }
             }

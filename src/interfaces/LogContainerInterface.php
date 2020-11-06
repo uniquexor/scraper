@@ -139,8 +139,8 @@
 
         /**
          * Logs an Exception.
-         * @param \Exception $exception - The exception thrown.
+         * @param \Throwable $exception - The exception thrown.
          * @param string|null $url - A causing url.
          */
-        public function logException( \Exception $exception, ?string $url );
+        public function logException( \Throwable $exception, ?string $url );
     }

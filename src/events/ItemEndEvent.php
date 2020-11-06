@@ -53,6 +53,15 @@
         }
 
         /**
+         * Sets a new state for the item.
+         * @param int $state
+         */
+        public function setState( int $state ) {
+
+            $this->state = $state;
+        }
+
+        /**
          * If no errors where found, provides data for item, that was scraped.
          * @return SiteItemInterface|null
          */

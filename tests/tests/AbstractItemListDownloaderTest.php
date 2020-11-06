@@ -379,6 +379,83 @@
             $this->assertEmpty( $expected_on_item_end, 'Should be called 4 times' );
         }
 
+        public function testItemStateChangeAfterItemEndEvent() {
+
+            $transport = $this->setUpMockTransport();
+
+            $mock = $this->createPartialMock( ItemListDownloader::class, [ 'getItems', 'getItemDownloader', 'hasNextPage', 'getItemUrl', 'getItemId' ] );
+            $mock
+                ->method( 'hasNextPage' )
+                ->willReturn( false );
+            $mock
+                ->method( 'getItemUrl' )
+                ->willReturnOnConsecutiveCalls( 'my.item1.com', 'my.item2.com', 'my.item3.com' );
+
+            $items = [];
+            $items[] = new \DOMElement( 'a' );
+            $items[] = new \DOMElement( 'a' );
+            $items[] = new \DOMElement( 'a' );
+
+            $mock
+                ->method( 'getItemId' )
+                ->willReturnOnConsecutiveCalls( 'id1', 'id2', 'id3', 'id4', 'id5' );
+
+            $site_item = new SiteItem();
+            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'getItem' ] );
+            $item_downloader
+                ->method( 'getItem' )
+                ->willReturn( $site_item );
+
+            $mock
+                ->method( 'getItemDownloader' )
+                ->willReturn( $item_downloader );
+
+            $mock
+                ->expects( $this->once() )
+                ->method( 'getItems' )
+                ->willReturn( $items );
+
+            $exception_item_end_event = new \Exception( 'test on event item end' );
+
+            $expected_on_item_end = [
+                [ null, null ],
+                [ AbstractItemListDownloader::STATE_SKIP, null ],
+                [ null, $exception_item_end_event ],
+                [ AbstractItemListDownloader::STATE_SKIP, null ],
+            ];
+            $mock->on( AbstractItemListDownloader::EVENT_ON_ITEM_END, function ( ItemEndEvent $event ) use ( &$expected_on_item_end ) {
+
+                $this->assertNotEmpty( $expected_on_item_end, 'Should not be called more than 4 times' );
+
+                $item = array_shift( $expected_on_item_end );
+                list( $new_state, $exception ) = $item;
+
+                if ( $new_state !== null ) {
+
+                    $event->setState( $new_state );
+                }
+
+                if ( $exception !== null ) {
+
+                    throw $exception;
+                }
+            } );
+
+            $log_container = $this->createPartialMock( LogContainer::class, [ 'logItemEnd' ] );
+
+            $log_container
+                ->expects( $this->exactly( 3 ) )
+                ->method( 'logItemEnd' )
+                ->withConsecutive(
+                    [ $site_item, AbstractItemListDownloader::STATE_OK ],
+                    [ $site_item, AbstractItemListDownloader::STATE_SKIP ],
+                    [ $site_item, AbstractItemListDownloader::STATE_SKIP ]
+                );
+
+            $mock->__construct( SiteItem::class, $transport, $log_container );
+            $mock->scrape();
+        }
+
         public function testItemBeginEventIsTriggeredAndIsBreakable() {
 
             $transport = $this->setUpMockTransport();
