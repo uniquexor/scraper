@@ -1,10 +1,10 @@
-# scraper
+# Scraper
 This is a helper component, to ease the creation of custom website scrapers.
 It implements some basic logic of iterating the listing pages and downloading the items.
 In order to use this, you must first implement your own ItemListDownloader and ItemDownloader for your particular website.
 
 ## Installation
-To install the component, use composer:
+This package requires `php >= 7.4`. To install the component, use composer:
 ```
 composer require unique/scraper
 ```

@@ -3,12 +3,8 @@
 
     use GuzzleHttp\Client;
     use GuzzleHttp\Psr7\Response;
-    use PHPUnit\Framework\Constraint\Callback;
-    use PHPUnit\Framework\Constraint\IsAnything;
-    use PHPUnit\Framework\Constraint\IsInstanceOf;
     use PHPUnit\Framework\TestCase;
     use Symfony\Component\DomCrawler\Crawler;
-    use unique\scraper\AbstractItemDownloader;
     use unique\scraper\AbstractItemListDownloader;
     use unique\scraper\events\BreakListEvent;
     use unique\scraper\events\ItemBeginEvent;
@@ -29,6 +25,20 @@
      * @package unique\scraperunit\tests
      */
     class AbstractItemListDownloaderTest extends TestCase {
+
+        /**
+         * Sets up a mock Client object for mock requests.
+         * @return Client|\PHPUnit\Framework\MockObject\MockObject
+         */
+        protected function setUpMockTransport() {
+
+            $transport = $this->createMock( Client::class );
+            $transport
+                ->method( 'request' )
+                ->willReturn( new Response( 200, [], '<body><p>Hello World!</p></body>' ) );
+
+            return $transport;
+        }
 
         public function testGetTransport() {
 
@@ -250,10 +260,7 @@
 
         public function testItemIsDownloadedAndEndEventTriggered() {
 
-            $transport = $this->createMock( Client::class );
-            $transport
-                ->method( 'request' )
-                ->willReturn( new Response( 200, [], '<body><p>Hello World!</p></body>' ) );
+            $transport = $this->setUpMockTransport();
 
             $mock = $this->createPartialMock( ItemListDownloader::class, [ 'getItems', 'getItemDownloader', 'hasNextPage', 'getItemUrl', 'getItemId' ] );
             $mock
@@ -374,10 +381,7 @@
 
         public function testItemBeginEventIsTriggeredAndIsBreakable() {
 
-            $transport = $this->createMock( Client::class );
-            $transport
-                ->method( 'request' )
-                ->willReturn( new Response( 200, [], '<body><p>Hello World!</p></body>' ) );
+            $transport = $this->setUpMockTransport();
 
             $mock = $this->createPartialMock( ItemListDownloader::class, [ 'getItems', 'getItemDownloader', 'hasNextPage', 'getItemUrl', 'getItemId' ] );
             $mock
@@ -486,10 +490,7 @@
 
         public function testMissingItemUrlAndBreakability() {
 
-            $transport = $this->createMock( Client::class );
-            $transport
-                ->method( 'request' )
-                ->willReturn( new Response( 200, [], '<body><p>Hello World!</p></body>' ) );
+            $transport = $this->setUpMockTransport();
 
             $mock = $this->createPartialMock( ItemListDownloader::class, [ 'getItems', 'getItemDownloader', 'hasNextPage', 'getItemUrl', 'getItemId' ] );
             $mock
