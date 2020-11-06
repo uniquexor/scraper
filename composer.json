@@ -1,0 +1,24 @@
+{
+  "name": "unique/scraper",
+  "description": "An abstract component for creating web scrapers",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Algirdas Gurevičius",
+      "email": "a.gurevicius@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "symfony/dom-crawler": "^5.0",
+    "unique/events": "^1.0",
+    "guzzlehttp/guzzle": "^7.2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "unique\\scraper\\": "src/",
+      "unique\\scraperunit\\": "tests/"
+    }
+  }
+}
