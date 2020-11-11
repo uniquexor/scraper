@@ -14,7 +14,7 @@
         /**
          * @covers \unique\scraper\AbstractItemDownloader
          */
-        public function testAssignOfDataOnCreation() {
+        public function testScrape() {
 
             $site_item = new SiteItem();
             $mock = $this->createPartialMock( ItemDownloader::class, [ 'assignItemData', 'createCrawlerFromUrl' ] );
@@ -34,7 +34,8 @@
             /**
              * @var ItemDownloader|MockObject $mock
              */
-            $mock->__construct( 'my.url.com', 'id', $this->createMock( AbstractItemListDownloader::class ), $site_item );
+            $mock->__construct( 'my.url.com', 'id', $this->createMock( Client::class ), $site_item );
+            $mock->scrape();
             $this->assertSame( $site_item, $mock->getItem() );
         }
 
@@ -49,12 +50,7 @@
                 ->method( 'request' )
                 ->with( 'GET', 'my.url.com' );
 
-            $list_downloader = $this->createMock( AbstractItemListDownloader::class );
-            $list_downloader
-                ->expects( $this->once() )
-                ->method( 'getTransport' )
-                ->willReturn( $transport );
-
-            new ItemDownloader( 'my.url.com', 'id', $list_downloader, new SiteItem() );
+            $item = new ItemDownloader( 'my.url.com', 'id', $transport, new SiteItem() );
+            $item->scrape();
         }
     }

@@ -1,10 +1,13 @@
 <?php
     namespace unique\scraper;
 
+    use GuzzleHttp\Client;
+    use GuzzleHttp\ClientInterface;
     use Symfony\Component\DomCrawler\Crawler;
+    use unique\scraper\interfaces\ScrapableInterface;
     use unique\scraper\interfaces\SiteItemInterface;
 
-    abstract class AbstractItemDownloader {
+    abstract class AbstractItemDownloader implements ScrapableInterface {
 
         /**
          * The url of the item being scraped.
@@ -25,26 +28,32 @@
         protected $item;
 
         /**
-         * The list downloader used to get the item.
-         * @var AbstractItemListDownloader
+         * The transport to be used for requests.
+         * @var ClientInterface
          */
-        protected $list_downloader;
+        protected $transport;
 
         /**
          * AbstractItemDownloader constructor.
          * @param string $url - The url of the item being scraped.
          * @param string $id - The ID of the item, being scraped.
-         * @param AbstractItemListDownloader $list_downloader - The list downloader used to get the item.
+         * @param ClientInterface $transport - Transport to be used for requests.
          * @param SiteItemInterface $site_item - The item being created from the scraped data.
          */
-        public function __construct( $url, string $id, AbstractItemListDownloader $list_downloader, SiteItemInterface $site_item ) {
+        public function __construct( $url, string $id, ClientInterface $transport, SiteItemInterface $site_item ) {
 
             $this->url = $url;
             $this->id = $id;
-            $this->list_downloader = $list_downloader;
+            $this->transport = $transport;
             $this->item = $site_item;
+        }
 
-            $this->assignItemData( $this->createCrawlerFromUrl( $url ) );
+        /**
+         * @inheritdoc
+         */
+        public function scrape() {
+
+            $this->assignItemData( $this->createCrawlerFromUrl( $this->url ) );
         }
 
         /**
@@ -55,7 +64,7 @@
          */
         protected function createCrawlerFromUrl( string $url ): Crawler {
 
-            $response = $this->list_downloader->getTransport()->request( 'GET', $url );
+            $response = $this->transport->request( 'GET', $url );
             return new Crawler( (string) $response->getBody() );
         }
 

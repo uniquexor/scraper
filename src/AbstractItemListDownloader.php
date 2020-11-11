@@ -12,8 +12,9 @@
     use unique\scraper\events\ListBeginEvent;
     use unique\scraper\events\ListEndEvent;
     use unique\scraper\interfaces\LogContainerInterface;
+    use unique\scraper\interfaces\ScrapableInterface;
 
-    abstract class AbstractItemListDownloader implements EventHandlingInterface {
+    abstract class AbstractItemListDownloader implements EventHandlingInterface, ScrapableInterface {
 
         use EventTrait;
 
@@ -84,7 +85,7 @@
                 $log_container = new LogContainer();
             }
 
-            $this->log_container = $log_container;
+            $this->setLogContainer( $log_container );
         }
 
         /**
@@ -179,16 +180,19 @@
                 try {
 
                     $item_downloader = $this->getItemDownloader( $url, $id );
-                    $state = $item_downloader === null ? self::STATE_SKIP : self::STATE_OK;
+                    if ( $item_downloader !== null ) {
+
+                        $item_downloader->scrape();
+                        $site_entry = $item_downloader->getItem();
+                        $state = self::STATE_OK;
+                    } else {
+
+                        $state = self::STATE_SKIP;
+                    }
                 } catch ( \Throwable $exception ) {
 
                     $this->log_container->logException( $exception, $url );
                     $state = self::STATE_FAIL;
-                }
-
-                if ( $item_downloader !== null ) {
-
-                    $site_entry = $item_downloader->getItem();
                 }
 
                 try {

@@ -286,7 +286,7 @@
                 ->willReturnOnConsecutiveCalls( 'id1', 'id2', 'id3', 'id4', 'id5' );
 
             $site_item = new SiteItem();
-            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'getItem' ] );
+            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'scrape', 'getItem' ] );
             $item_downloader
                 ->expects( $this->once() )
                 ->method( 'getItem' )
@@ -401,7 +401,7 @@
                 ->willReturnOnConsecutiveCalls( 'id1', 'id2', 'id3', 'id4', 'id5' );
 
             $site_item = new SiteItem();
-            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'getItem' ] );
+            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'scrape', 'getItem' ] );
             $item_downloader
                 ->method( 'getItem' )
                 ->willReturn( $site_item );
@@ -484,7 +484,7 @@
                 ->willReturnOnConsecutiveCalls( 'id1', 'id2', 'id3', 'id4', 'id5' );
 
             $site_item = new SiteItem();
-            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'getItem' ] );
+            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'scrape', 'getItem' ] );
             $item_downloader
                 ->method( 'getItem' )
                 ->willReturn( $site_item );
@@ -587,7 +587,7 @@
                 ->willReturnOnConsecutiveCalls( 'id1', 'id2', 'id3', 'id4', 'id5' );
 
             $site_item = new SiteItem();
-            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'getItem' ] );
+            $item_downloader = $this->createPartialMock( ItemDownloader::class, [ 'scrape', 'getItem' ] );
             $item_downloader
                 ->method( 'getItem' )
                 ->willReturn( $site_item );
