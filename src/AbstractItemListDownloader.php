@@ -158,7 +158,7 @@
 
                 $this->log_container->logItemBegin( $id, $url );
 
-                $event = new ItemBeginEvent( $id, $url );
+                $event = new ItemBeginEvent( $id, $url, $item );
                 $this->trigger( self::EVENT_ON_ITEM_BEGIN, $event );
                 if ( $event->shouldSkip() ) {
 
@@ -197,7 +197,7 @@
 
                 try {
 
-                    $event = new ItemEndEvent( $site_entry, $this->item_count, $state );
+                    $event = new ItemEndEvent( $site_entry, $this->item_count, $state, $item );
                     $this->trigger( self::EVENT_ON_ITEM_END, $event );
                     $state = $event->getState();
                     $this->log_container->logItemEnd( $site_entry, $state );
@@ -206,7 +206,7 @@
                     $this->log_container->logException( $exception, $url );
 
                     $state = self::STATE_FAIL;
-                    $event = new ItemEndEvent( null, $this->item_count, $state );
+                    $event = new ItemEndEvent( null, $this->item_count, $state, $item );
                     $this->trigger( self::EVENT_ON_ITEM_END, $event );
                     $state = $event->getState();
                     $this->log_container->logItemEnd( $site_entry, $state );

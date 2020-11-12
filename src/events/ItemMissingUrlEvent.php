@@ -4,6 +4,8 @@
     use unique\events\interfaces\EventObjectInterface;
     use unique\events\traits\EventObjectTrait;
     use unique\scraper\AbstractItemListDownloader;
+    use unique\scraper\interfaces\DomEventInterface;
+    use unique\scraper\traits\DomEventTrait;
 
     /**
      * Class ItemMissingUrlEvent.
@@ -12,15 +14,9 @@
      *
      * @package unique\scraper\events
      */
-    class ItemMissingUrlEvent implements EventObjectInterface {
+    class ItemMissingUrlEvent implements EventObjectInterface, DomEventInterface {
 
-        use EventObjectTrait;
-
-        /**
-         * DOM element that had to return an item url.
-         * @var \DOMElement|null
-         */
-        protected ?\DOMElement $item = null;
+        use EventObjectTrait, DomEventTrait;
 
         /**
          * Stores the new url, for item processing.
@@ -30,11 +26,11 @@
 
         /**
          * ItemMissingUrlEvent constructor.
-         * @param \DOMElement|null $item - DOM element that had to return an item url.
+         * @param \DOMElement $item - DOM element that had to return an item url.
          */
-        public function __construct( ?\DOMElement $item = null ) {
+        public function __construct( \DOMElement $item ) {
 
-            $this->item = $item;
+            $this->setDomElement( $item );
         }
 
         /**
@@ -53,14 +49,5 @@
         public function setUrl( ?string $url ): void {
 
             $this->url = $url;
-        }
-
-        /**
-         * Returns one of the DOMElement objects, that was returned by the {@see AbstractItemListDownloader::getItems()} method.
-         * @return \DOMElement|null
-         */
-        protected function getItem() {
-
-            return $this->item;
         }
     }

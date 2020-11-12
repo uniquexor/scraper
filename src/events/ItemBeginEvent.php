@@ -4,7 +4,9 @@
     use unique\events\interfaces\EventObjectInterface;
     use unique\events\traits\EventObjectTrait;
     use unique\scraper\interfaces\BreakableEventInterface;
+    use unique\scraper\interfaces\DomEventInterface;
     use unique\scraper\traits\BreakableEventTrait;
+    use unique\scraper\traits\DomEventTrait;
 
     /**
      * Class ItemBeginEvent.
@@ -12,9 +14,9 @@
      *
      * @package unique\scraper\events
      */
-    class ItemBeginEvent implements EventObjectInterface, BreakableEventInterface {
+    class ItemBeginEvent implements EventObjectInterface, BreakableEventInterface, DomEventInterface {
 
-        use EventObjectTrait, BreakableEventTrait;
+        use EventObjectTrait, BreakableEventTrait, DomEventTrait;
 
         /**
          * Contains an item id.
@@ -33,10 +35,11 @@
          * @param int|string|null $id - Item id.
          * @param string|null $url - An item page url.
          */
-        public function __construct( $id, $url ) {
+        public function __construct( $id, $url, \DOMElement $dom_element ) {
 
             $this->id = $id;
             $this->url = $url;
+            $this->setDomElement( $dom_element );
         }
 
         /**

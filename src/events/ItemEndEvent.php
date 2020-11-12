@@ -3,8 +3,10 @@
 
     use unique\events\interfaces\EventObjectInterface;
     use unique\events\traits\EventObjectTrait;
+    use unique\scraper\interfaces\DomEventInterface;
     use unique\scraper\interfaces\SiteItemInterface;
     use unique\scraper\ItemCount;
+    use unique\scraper\traits\DomEventTrait;
 
     /**
      * Class ItemEndEvent.
@@ -12,9 +14,9 @@
      *
      * @package unique\scraper\events
      */
-    class ItemEndEvent implements EventObjectInterface {
+    class ItemEndEvent implements EventObjectInterface, DomEventInterface {
 
-        use EventObjectTrait;
+        use EventObjectTrait, DomEventTrait;
 
         /**
          * If no errors where found, provides a SiteItem for saving.
@@ -36,11 +38,12 @@
          * @param ItemCount $item_count
          * @param int $state - One of the state constants found in {@see AbstractItemListDownloader}::STATE_*
          */
-        public function __construct( ?SiteItemInterface $site_item, ItemCount $item_count, int $state ) {
+        public function __construct( ?SiteItemInterface $site_item, ItemCount $item_count, int $state, \DOMElement $dom_element ) {
 
             $this->site_item = $site_item;
             $this->item_count = $item_count;
             $this->state = $state;
+            $this->setDomElement( $dom_element );
         }
 
         /**

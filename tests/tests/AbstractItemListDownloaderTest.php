@@ -327,16 +327,17 @@
                 ->method( 'getItems' )
                 ->willReturn( $items );
 
-            $event_ok = new ItemEndEvent( $site_item, new ItemCount(), AbstractItemListDownloader::STATE_OK );
-            $event_fail = new ItemEndEvent( null, new ItemCount(), AbstractItemListDownloader::STATE_FAIL );
-            $event_skip = new ItemEndEvent( null, new ItemCount(), AbstractItemListDownloader::STATE_SKIP );
+            $event_ok = new ItemEndEvent( $site_item, new ItemCount(), AbstractItemListDownloader::STATE_OK, $items[0] );
+            $event_fail_1 = new ItemEndEvent( null, new ItemCount(), AbstractItemListDownloader::STATE_FAIL, $items[0] );
+            $event_fail_2 = new ItemEndEvent( null, new ItemCount(), AbstractItemListDownloader::STATE_FAIL, $items[1] );
+            $event_skip = new ItemEndEvent( null, new ItemCount(), AbstractItemListDownloader::STATE_SKIP, $items[2] );
 
             $exception_item_end_event = new \Exception( 'test on event item end' );
 
             $expected_on_item_end = [
                 [ $event_ok, $exception_item_end_event ],
-                [ $event_fail, null ],
-                [ $event_fail, null ],
+                [ $event_fail_1, null ],
+                [ $event_fail_2, null ],
                 [ $event_skip, null ],
             ];
             $mock->on( AbstractItemListDownloader::EVENT_ON_ITEM_END, function ( ItemEndEvent $event ) use ( &$expected_on_item_end ) {
@@ -348,6 +349,7 @@
 
                 $this->assertSame( $item->getSiteItem(), $event->getSiteItem() );
                 $this->assertSame( $item->getState(), $event->getState() );
+                $this->assertSame( $item->getDomElement(), $event->getDomElement() );
 
                 if ( $exception !== null ) {
 
@@ -500,10 +502,10 @@
 
             $break_event = null;
             $event_expectations = [
-                [ new ItemBeginEvent( 'id1', 'my.item1.com' ), null ],
-                [ new ItemBeginEvent( 'id2', 'my.item2.com' ), function ( ItemBeginEvent $event ) { $event->skip(); } ],
+                [ new ItemBeginEvent( 'id1', 'my.item1.com', $items[0] ), null ],
+                [ new ItemBeginEvent( 'id2', 'my.item2.com', $items[1] ), function ( ItemBeginEvent $event ) { $event->skip(); } ],
                 [
-                    new ItemBeginEvent( 'id3', 'my.item3.com' ),
+                    new ItemBeginEvent( 'id3', 'my.item3.com', $items[2] ),
                     function ( ItemBeginEvent $event ) use ( &$break_event ) {
 
                         $event->break();
@@ -521,6 +523,7 @@
 
                 $this->assertSame( $item->getUrl(), $event->getUrl() );
                 $this->assertSame( $item->getId(), $event->getId() );
+                $this->assertSame( $item->getDomElement(), $event->getDomElement() );
 
                 if ( $closure !== null ) {
 
@@ -622,6 +625,8 @@
                 list( $item, $closure ) = $item;
 
                 $this->assertSame( $item->getUrl(), $event->getUrl() );
+                $this->assertSame( $item->getDomElement(), $event->getDomElement() );
+
                 if ( $closure !== null ) {
 
                     call_user_func( $closure, $event );

@@ -156,6 +156,7 @@ The event object will be `ItemBeginEvent`. This is a "breakable" event (read on 
 Methods:
 - `getId(): string` returns the id of the item.
 - `getUrl(): string` returns url of the item.
+- `getDomElement(): \DOMElement` returns the corresponding \DOMElement.
 
 #### `on_item_end`
 The event object will be `ItemEndEvent`.
@@ -163,13 +164,14 @@ Methods:
 - `getItemCount(): ItemCount` returns information about page number, size and total amount of items.
 - `getState(): int` One of the state constants found in `AbstractItemListDownloader::STATE_*`.
 - `getSiteItem(): ?SiteItemInterface` If no errors where found, provides data for item, that was scraped.
+- `getDomElement(): \DOMElement` returns the corresponding \DOMElement.
 
 #### `on_item_missing_url`
 The event object will be `ItemMissingUrlEvent`.
 Methods:
 - `getUrl(): ?string` returns url of the item.
 - `setUrl( ?string $url )` Allows for a handler to set a new url.
-- `getItem(): ?\DOMElement` Returns one of the DOMElement objects, that was returned by the `AbstractItemListDownloader::getItems()` method.
+- `getDomElement(): \DOMElement` returns the corresponding \DOMElement.
 
 #### `on_break_list`
 The event object will be `BreakListEvent`.
