@@ -10,10 +10,7 @@
     }
   ],
   "require": {
-    "php": ">=7.4",
-    "symfony/dom-crawler": "*",
-    "unique/events": "*",
-    "guzzlehttp/guzzle": "*"
+
   },
   "autoload": {
     "psr-4": {
