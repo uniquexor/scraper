@@ -11,8 +11,8 @@
   ],
   "require": {
     "php": ">=7.4",
-    "symfony/dom-crawler": "^5.0",
-    "unique/events": "^1.0",
+    "symfony/dom-crawler": "*",
+    "unique/events": "*",
     "guzzlehttp/guzzle": "*"
   },
   "autoload": {
