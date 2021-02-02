@@ -1,6 +1,7 @@
 <?php
     namespace unique\scraper\interfaces;
 
+    use unique\scraper\components\Request;
     use unique\scraper\ItemCount;
 
     interface LogContainerInterface {
@@ -114,9 +115,9 @@
         /**
          * Logs the begining of processing for the item.
          * @param string|null $id - Item ID
-         * @param string|null $url - Item URL
+         * @param string|Request|null $url - Item URL
          */
-        public function logItemBegin( ?string $id, ?string $url );
+        public function logItemBegin( ?string $id, $url );
 
         /**
          * Logs the end of processing for the list of items.

@@ -7,7 +7,7 @@
 
     class ItemListDownloader extends AbstractItemListDownloader {
 
-        public function getListUrl( ?int $page_num ): string {
+        public function getListUrl( ?int $page_num ) {
 
             return '';
         }

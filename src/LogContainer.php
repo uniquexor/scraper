@@ -1,6 +1,7 @@
 <?php
     namespace unique\scraper;
 
+    use unique\scraper\components\Request;
     use unique\scraper\interfaces\LogContainerInterface;
     use unique\scraper\interfaces\SiteItemInterface;
 
@@ -196,9 +197,9 @@
         /**
          * Logs the begining of processing for the item.
          * @param string|null $id - Item ID
-         * @param string|null $url - Item URL
+         * @param string|Request|null $url - Item URL
          */
-        public function logItemBegin( ?string $id, ?string $url ) {
+        public function logItemBegin( ?string $id, $url ) {
 
             if ( is_callable( $this->item_begin ) ) {
 

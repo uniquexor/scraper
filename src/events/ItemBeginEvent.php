@@ -3,6 +3,7 @@
 
     use unique\events\interfaces\EventObjectInterface;
     use unique\events\traits\EventObjectTrait;
+    use unique\scraper\components\Request;
     use unique\scraper\interfaces\BreakableEventInterface;
     use unique\scraper\interfaces\DomEventInterface;
     use unique\scraper\traits\BreakableEventTrait;
@@ -26,14 +27,14 @@
 
         /**
          * Contains an item page url.
-         * @var string|null
+         * @var string|Request|null
          */
         protected $url;
 
         /**
          * ItemBeginEvent constructor.
          * @param int|string|null $id - Item id.
-         * @param string|null $url - An item page url.
+         * @param string|Request|null $url - An item page url.
          */
         public function __construct( $id, $url, \DOMElement $dom_element ) {
 
@@ -53,7 +54,7 @@
 
         /**
          * Returns an item page url.
-         * @return mixed
+         * @return string|Request|null
          */
         public function getUrl() {
 

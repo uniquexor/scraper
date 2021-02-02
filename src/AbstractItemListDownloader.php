@@ -5,6 +5,7 @@
     use Symfony\Component\DomCrawler\Crawler;
     use unique\events\interfaces\EventHandlingInterface;
     use unique\events\traits\EventTrait;
+    use unique\scraper\components\Request;
     use unique\scraper\events\BreakListEvent;
     use unique\scraper\events\ItemBeginEvent;
     use unique\scraper\events\ItemEndEvent;
@@ -119,7 +120,13 @@
 
             try {
 
-                $response = $this->transport->request( 'GET', $url );
+                if ( $url instanceof Request ) {
+
+                    $response = $this->transport->request( $url->getMethod(), $url->getUri(), $url->getOptions() );
+                } else {
+
+                    $response = $this->transport->request( 'GET', $url );
+                }
             } catch ( \Throwable $exception ) {
 
                 $this->log_container->logException( $exception, $url );
@@ -278,9 +285,9 @@
         /**
          * Renders the listing page url for the given page number.
          * @param int|null $page_num
-         * @return string
+         * @return string|Request
          */
-        public abstract function getListUrl( ?int $page_num ): string;
+        public abstract function getListUrl( ?int $page_num );
 
         /**
          * If possible, returns the total number of items (in all pages), otherwise - null.
@@ -303,28 +310,28 @@
          * If the item does not need to be scraped, can return null.
          *
          * @param \DOMElement $item
-         * @return string|null
+         * @return string|Request|null
          */
-        public abstract function getItemUrl( \DOMElement $item ): ?string;
+        public abstract function getItemUrl( \DOMElement $item );
 
         /**
          * Returns an ID of the item to be scraped.
          * Since ID can usually be found in a URL, an item URL is passed as the first parameter, however, in case it
          * is not in a url, a corresponding \DOMElement is also provided.
          *
-         * @param string $url
+         * @param string|Request $url
          * @param \DOMElement $item
          * @return string
          */
-        public abstract function getItemId( string $url, \DOMElement $item ): string;
+        public abstract function getItemId( $url, \DOMElement $item ): string;
 
         /**
          * Creates a new item downloader.
-         * @param string $url
+         * @param string|Request $url
          * @param string $id
          * @return AbstractItemDownloader|null
          */
-        public abstract function getItemDownloader( string $url, string $id ): ?AbstractItemDownloader;
+        public abstract function getItemDownloader( $url, string $id ): ?AbstractItemDownloader;
 
         /**
          * Returns the number of items in a single page.
