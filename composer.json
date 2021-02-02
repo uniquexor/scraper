@@ -13,7 +13,7 @@
     "php": ">=7.4",
     "symfony/dom-crawler": "^5.0",
     "unique/events": "^1.0",
-    "guzzlehttp/guzzle": "^7.2.0"
+    "guzzlehttp/guzzle": "*"
   },
   "autoload": {
     "psr-4": {
