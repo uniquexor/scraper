@@ -25,11 +25,11 @@
 
         }
 
-        public function getItemId( string $url, \DOMElement $item ): string {
+        public function getItemId( $url, \DOMElement $item ): string {
 
         }
 
-        public function getItemDownloader( string $url, string $id ): ?AbstractItemDownloader {
+        public function getItemDownloader( $url, string $id ): ?AbstractItemDownloader {
 
         }
 

@@ -14,10 +14,11 @@
     use unique\scraper\events\ListEndEvent;
     use unique\scraper\interfaces\LogContainerInterface;
     use unique\scraper\interfaces\ScrapableInterface;
+    use unique\scraper\traits\RetryableRequestTrait;
 
     abstract class AbstractItemListDownloader implements EventHandlingInterface, ScrapableInterface {
 
-        use EventTrait;
+        use EventTrait, RetryableRequestTrait;
 
         const STATE_OK = 0;
         const STATE_SKIP = 1;
@@ -122,10 +123,10 @@
 
                 if ( $url instanceof Request ) {
 
-                    $response = $this->transport->request( $url->getMethod(), $url->getUri(), $url->getOptions() );
+                    $response = $this->retryRequest( $this->transport, $url->getMethod(), $url->getUri(), $url->getOptions() );
                 } else {
 
-                    $response = $this->transport->request( 'GET', $url );
+                    $response = $this->retryRequest( $this->transport, 'GET', $url );
                 }
             } catch ( \Throwable $exception ) {
 

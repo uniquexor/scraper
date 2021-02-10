@@ -6,6 +6,7 @@
     use PHPUnit\Framework\TestCase;
     use Symfony\Component\DomCrawler\Crawler;
     use unique\scraper\AbstractItemListDownloader;
+    use unique\scraper\components\Request;
     use unique\scraper\events\BreakListEvent;
     use unique\scraper\events\ItemBeginEvent;
     use unique\scraper\events\ItemEndEvent;
@@ -255,6 +256,34 @@
                 ->with( $exception, 'my.request.com' );
 
             $mock->setLogContainer( $log_container );
+            $mock->scrape();
+        }
+
+        public function testDownloadPageUrlCanBeObject() {
+
+            $transport = $this->createPartialMock( Client::class, [ 'request' ] );
+            $transport
+                ->expects( $this->exactly( 1 ) )
+                ->method( 'request' )
+                ->with( 'method', 'test.com', [ 'opt1' => 1 ] )
+                ->willReturnCallback( function () use ( &$expectation ) {
+
+                    return  new Response( 200, [], '<body><p>Hello World!</p></body>' );
+                } );
+
+            $mock = $this->createPartialMock( ItemListDownloader::class, [ 'getListUrl', 'getItems' ] );
+            $mock
+                ->expects( $this->exactly( 1 ) )
+                ->method( 'getListUrl' )
+                ->willReturn( new Request( 'test.com', 'method', [ 'opt1' => 1 ] ) );
+            $mock
+                ->method( 'getItems' )
+                ->willReturn( [] );
+
+            $mock->__construct( SiteItem::class, $transport );
+            $log_container = $this->createPartialMock( LogContainer::class, [] );
+            $mock->setLogContainer( $log_container );
+
             $mock->scrape();
         }
 

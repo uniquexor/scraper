@@ -1,6 +1,11 @@
 <?php
     namespace unique\scraper\components;
 
+    /**
+     * A class for consolidating request options to be passed as an object.
+     *
+     * @package unique\scraper\components
+     */
     class Request {
 
         protected string $method = 'GET';
@@ -9,6 +14,12 @@
 
         protected array $options = [];
 
+        /**
+         * Request constructor.
+         * @param string $uri
+         * @param string $method
+         * @param array $options
+         */
         public function __construct( string $uri, string $method = 'GET', array $options = [] ) {
 
             $this->uri = $uri;

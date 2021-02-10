@@ -2,6 +2,9 @@
     namespace unique\scraperunit\tests;
 
     use GuzzleHttp\Client;
+    use GuzzleHttp\Exception\ConnectException;
+    use GuzzleHttp\Psr7\Request;
+    use GuzzleHttp\Psr7\Response;
     use PHPUnit\Framework\MockObject\MockObject;
     use PHPUnit\Framework\TestCase;
     use Symfony\Component\DomCrawler\Crawler;
@@ -41,6 +44,7 @@
 
         /**
          * @covers \unique\scraper\AbstractItemDownloader::createCrawlerFromUrl
+         * @covers \unique\scraper\traits\RetryableRequestTrait::retryRequest
          */
         public function testCreateCrawlerFromUrl() {
 
@@ -51,6 +55,59 @@
                 ->with( 'GET', 'my.url.com' );
 
             $item = new ItemDownloader( 'my.url.com', 'id', $transport, new SiteItem() );
+            $item->scrape();
+
+            // Retry request 2 times, 3rd - success
+
+            $retry = 0;
+            $transport = $this->createPartialMock( Client::class, [ 'request' ] );
+            $transport
+                ->expects( $this->exactly( 3 ) )
+                ->method( 'request' )
+                ->with( 'GET', 'my.url.com' )
+                ->willReturnCallback( function () use ( &$retry ) {
+
+                    if ( ++$retry === 3 ) {
+
+                        return new Response( 200, [], '<h1>Hello World!</h1>' );
+                    } else {
+
+                        throw new ConnectException( 'Test', new Request( 'GET', 'url' ) );
+                    }
+                } );
+
+            /**
+             * @var ItemDownloader|MockObject $item
+             */
+            $item = $this->createPartialMock( ItemDownloader::class, [ 'assignItemData' ] );
+            $item->expects( $this->once() )
+                ->method( 'assignItemData' )
+                ->with( $this->callback( function ( Crawler $crawler ) {
+
+                    return $crawler->html() === '<body><h1>Hello World!</h1></body>';
+                } ) );
+
+            $item->__construct( 'my.url.com', 'id', $transport, new SiteItem() );
+            $item->on_connect_exception_retry_timeout = 0;
+            $item->scrape();
+
+
+            // Retry request 3 times, all fail
+
+            $exception = new ConnectException( 'Test', new Request( 'GET', 'url' ) );
+
+            $transport = $this->createPartialMock( Client::class, [ 'request' ] );
+            $transport
+                ->expects( $this->exactly( 4 ) )
+                ->method( 'request' )
+                ->willThrowException( $exception );
+
+            /**
+             * @var ItemDownloader|MockObject $item
+             */
+            $this->expectExceptionObject( $exception );
+            $item = new ItemDownloader( 'url', 'id', $transport, new SiteItem() );
+            $item->on_connect_exception_retry_timeout = 0;
             $item->scrape();
         }
     }

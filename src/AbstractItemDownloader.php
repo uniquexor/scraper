@@ -3,11 +3,15 @@
 
     use GuzzleHttp\Client;
     use GuzzleHttp\ClientInterface;
+    use GuzzleHttp\Exception\ConnectException;
     use Symfony\Component\DomCrawler\Crawler;
     use unique\scraper\interfaces\ScrapableInterface;
     use unique\scraper\interfaces\SiteItemInterface;
+    use unique\scraper\traits\RetryableRequestTrait;
 
     abstract class AbstractItemDownloader implements ScrapableInterface {
+
+        use RetryableRequestTrait;
 
         /**
          * The url of the item being scraped.
@@ -64,7 +68,7 @@
          */
         protected function createCrawlerFromUrl( string $url ): Crawler {
 
-            $response = $this->transport->request( 'GET', $url );
+            $response = $this->retryRequest( $this->transport, 'GET', $url );
             return new Crawler( (string) $response->getBody() );
         }
 
