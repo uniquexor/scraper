@@ -1,5 +1,5 @@
 <?php
-    namespace app\components;
+    namespace unique\scraper\components;
 
     /**
      * Class RequestHelper.
