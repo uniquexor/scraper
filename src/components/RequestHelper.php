@@ -124,6 +124,12 @@
             return $this;
         }
 
+        public function unsetHeader( $header ) {
+
+            unset( $this->headers[ $header ] );
+            return $this;
+        }
+
         public function toArray() {
 
             return $this->headers;
