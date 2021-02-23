@@ -1,7 +1,8 @@
 # Scraper
 This is a helper component, to ease the creation of custom website scrapers.
 It implements some basic logic of iterating the listing pages and downloading the items.
-In order to use this, you must first implement your own ItemListDownloader and ItemDownloader for your particular website.
+In order to use this, you must first implement your own ItemListDownloader (by extending AbstractItemListDownloader) and ItemDownloader,
+(by extending AbstractItemDownloader or AbstractJsonItemDownloader) for your particular website.
 
 ## Installation
 This package requires `php >= 7.4`. To install the component, use composer:
@@ -100,6 +101,20 @@ Then we create a downloader for the ad itself:
             // We set all the attributes we need for our custom SiteItem object,
             // which can be accessed by the $this->item attribute.
             $this->item->setTitle( $doc->filter( 'h1' )->text() );
+        }
+    }
+```
+
+Or you could extend AbstractJsonItemDownloader if ad data was fetched via json.
+
+```php
+    class ItemDownloader extends \unique\scraper\AbstractJsonItemDownloader {
+
+        protected function assignItemData( array $json ) {
+
+            // We set all the attributes we need for our custom SiteItem object,
+            // which can be accessed by the $this->item attribute.
+            $this->item->setTitle( $json['title'] );
         }
     }
 ```
